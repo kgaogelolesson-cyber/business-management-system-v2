@@ -10,11 +10,10 @@ being built step by step with **React**, **Spring Boot** and **PostgreSQL**.
 
 - PostgreSQL schema (9 tables, 3 views) converted from the Version 1 SQLite schema: `database/postgres-schema.sql`
 - Spring Boot backend that connects to PostgreSQL
-- `GET /api/customers` returns the active customers as JSON
+- Customers API: list, get one, create, edit, delete (hidden, and blocked when the customer has orders), with the same validation rules as Version 1
 
 ## What is NOT done yet
 
-- Create, edit and delete customers
 - Login, roles and passwords (the security setup is **temporary and open**: do not expose this to a network)
 - Products, suppliers, employees, inventory, orders and reports
 - The React front end
