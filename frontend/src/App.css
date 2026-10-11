@@ -112,3 +112,76 @@ tbody tr:nth-child(even) {
   border-radius: 6px;
   font-size: 1rem;
 }
+
+/* ---- customer form and row buttons (Step U) ---- */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.form-card {
+  background: #fff;
+  border: 1px solid #d5dbe1;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.form-card h3 {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.form-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+}
+
+.form-card input {
+  padding: 8px 10px;
+  border: 1px solid #c3ccd5;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.form-card .error,
+.form-card .form-actions {
+  grid-column: 1 / -1;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+button.secondary {
+  background: #e4e8ec;
+  color: #1f2933;
+}
+
+button.danger {
+  background: #b3261e;
+}
+
+td.actions {
+  white-space: nowrap;
+  display: flex;
+  gap: 6px;
+}
+
+td.actions button {
+  padding: 4px 10px;
+  font-size: 0.85rem;
+}
+
+tbody tr {
+  cursor: pointer;
+}

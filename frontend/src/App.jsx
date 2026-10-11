@@ -26,7 +26,7 @@ export default function App() {
           <button onClick={handleLogout}>Log out</button>
         </div>
       </header>
-      <CustomerList />
+      <CustomerList user={user} />
     </div>
   )
 }
