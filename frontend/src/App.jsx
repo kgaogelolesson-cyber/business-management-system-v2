@@ -5,6 +5,7 @@ import LoginForm from './LoginForm'
 import CustomerList from './CustomerList'
 import ProductList from './ProductList'
 import InventoryList from './InventoryList'
+import OrderList from './OrderList'
 
 // The top-level component. Until someone is logged in it shows only the login screen.
 export default function App() {
@@ -41,11 +42,15 @@ export default function App() {
         <button className={tab === 'inventory' ? 'active' : ''} onClick={() => setTab('inventory')}>
           Inventory
         </button>
+        <button className={tab === 'orders' ? 'active' : ''} onClick={() => setTab('orders')}>
+          Orders
+        </button>
       </nav>
 
       {tab === 'customers' && <CustomerList user={user} />}
       {tab === 'products' && <ProductList user={user} />}
       {tab === 'inventory' && <InventoryList user={user} />}
+      {tab === 'orders' && <OrderList user={user} />}
     </div>
   )
 }
