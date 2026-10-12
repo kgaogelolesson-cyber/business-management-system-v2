@@ -270,3 +270,37 @@ th.number {
   color: #666;
   margin: 0.2rem 0 0.6rem;
 }
+
+/* ---------- inventory ---------- */
+.change-add {
+  color: #1d6b35;
+  font-weight: 600;
+}
+
+.change-remove {
+  color: #9b1c1c;
+  font-weight: 600;
+}
+
+.choice-row {
+  display: flex;
+  gap: 1.25rem;
+  margin: 0.4rem 0 0.8rem;
+}
+
+.choice-row label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.choice-row input {
+  width: auto;
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
