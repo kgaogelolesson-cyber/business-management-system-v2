@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * far away (a browser), so the server answers with a status code and a JSON message instead.
  *
  *   400 Bad Request  the data breaks a rule
+ *   403 Forbidden    you are logged in but not allowed to see this
  *   404 Not Found    the item does not exist
  *   409 Conflict     the data is fine but the action is not allowed right now
  */
@@ -31,6 +32,11 @@ public class ApiExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ApiError> conflict(ConflictException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiError(e.getMessage()));
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ApiError> forbidden(ForbiddenException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiError(e.getMessage()));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
