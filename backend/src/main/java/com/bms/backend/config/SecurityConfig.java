@@ -38,6 +38,10 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         // Same rule as Version 1: only the administrator may delete a customer.
                         .requestMatchers(HttpMethod.DELETE, "/api/customers/**").hasRole("ADMIN")
+                        // Products: everyone logged in may VIEW them (GET); only the administrator may change them.
+                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
                         // Everything else needs any logged-in user.
                         .anyRequest().authenticated());
         return http.build();
