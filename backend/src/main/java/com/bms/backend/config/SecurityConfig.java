@@ -44,6 +44,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
                         // Inventory: everyone logged in may VIEW stock and history; only the administrator may adjust stock.
                         .requestMatchers(HttpMethod.POST, "/api/inventory/**").hasRole("ADMIN")
+                        // Orders: any logged-in user may create and view them; only the administrator may cancel one.
+                        .requestMatchers(HttpMethod.POST, "/api/orders/*/cancel").hasRole("ADMIN")
                         // Everything else needs any logged-in user.
                         .anyRequest().authenticated());
         return http.build();

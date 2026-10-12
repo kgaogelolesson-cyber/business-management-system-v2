@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  *   GET  /api/orders            list (?search=  &status=COMPLETED  &from=2026-10-01  &to=2026-10-31  &customerId=3)
  *   GET  /api/orders/7          one order with its lines
  *   POST /api/orders            create an order (any logged-in user with an employee record)
+ *   POST /api/orders/7/cancel   cancel an order and put its stock back (administrator only)
  */
 @RestController
 @RequestMapping("/api/orders")
@@ -46,6 +47,11 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public OrderDetail create(@RequestBody OrderRequest request, Authentication authentication) {
         return service.create(request, authentication.getName(), isAdmin(authentication));
+    }
+
+    @PostMapping("/{id}/cancel")
+    public OrderDetail cancel(@PathVariable Long id, Authentication authentication) {
+        return service.cancel(id, authentication.getName());
     }
 
     private boolean isAdmin(Authentication authentication) {

@@ -21,7 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
  *  - Any logged-in user with an employee record may create an order; it is recorded against THAT employee.
  *  - An administrator sees every order. An employee sees only their own.
  *  - Creating an order reduces the stock and writes stock-history lines, all in ONE transaction:
- *    if anything fails, nothing is saved. (Cancelling an order comes in the next step.)
+ *    if anything fails, nothing is saved.
+ *  - Only an administrator may cancel an order. Cancelling puts the stock back (also in one transaction).
  */
 @Service
 public class OrderService {
@@ -232,6 +233,49 @@ public class OrderService {
 
         jdbc.update("UPDATE orders SET total_amount_cents = ? WHERE order_id = ?", total, orderId);
         return get(orderId, username, admin);
+    }
+
+    // ---------- cancelling (administrator only: enforced in SecurityConfig) ----------
+
+    /**
+     * Cancels a COMPLETED order and puts its products back into stock, writing a stock-history line for
+     * each. A cancelled order stays in the list for the records. One transaction: all of it, or none.
+     */
+    @Transactional
+    public OrderDetail cancel(Long orderId, String username) {
+        String status = jdbc.query("SELECT status FROM orders WHERE order_id = ?",
+                        (rs, i) -> rs.getString(1), orderId)
+                .stream().findFirst().orElseThrow(() -> new NotFoundException(GONE));
+        if ("CANCELLED".equals(status)) {
+            throw new ValidationException("Order #" + orderId + " is already cancelled.");
+        }
+        Long userId = users.findByUsernameIgnoreCase(username)
+                .map(UserAccount::getUserId)
+                .orElseThrow(() -> new NotFoundException("Your user account could not be found."));
+
+        // One statement that only works while the order is still COMPLETED, so two people cancelling at the
+        // same moment cannot both put the stock back.
+        int changed = jdbc.update("""
+                UPDATE orders SET status = 'CANCELLED', cancelled_at = now(), cancelled_by = ?
+                WHERE order_id = ? AND status = 'COMPLETED'
+                """, userId, orderId);
+        if (changed != 1) {
+            throw new ValidationException(
+                    "Order #" + orderId + " could not be cancelled. Please refresh the list.");
+        }
+
+        List<long[]> lines = jdbc.query(
+                "SELECT product_id, quantity FROM order_items WHERE order_id = ? ORDER BY order_item_id",
+                (rs, i) -> new long[] {rs.getLong(1), rs.getLong(2)}, orderId);
+        for (long[] line : lines) {
+            jdbc.update("UPDATE products SET quantity_in_stock = quantity_in_stock + ? WHERE product_id = ?",
+                    line[1], line[0]);
+            jdbc.update("""
+                    INSERT INTO stock_adjustments (product_id, user_id, quantity_change, reason)
+                    VALUES (?, ?, ?, ?)
+                    """, line[0], userId, line[1], "Order #" + orderId + " cancelled");
+        }
+        return get(orderId, username, true);
     }
 
     // ---------- helpers ----------
