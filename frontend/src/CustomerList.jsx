@@ -10,13 +10,16 @@ export default function CustomerList({ user }) {
   const [actionError, setActionError] = useState('')
   const [form, setForm] = useState(null) // null = form hidden, { customer: null } = add, { customer } = edit
   const [reloadCount, setReloadCount] = useState(0) // changing this number makes the list load again
+  const [searchText, setSearchText] = useState('') // what is typed in the box
+  const [appliedSearch, setAppliedSearch] = useState('') // what the list is actually filtered by
 
   const isAdmin = user.role === 'ADMIN'
 
   useEffect(() => {
     let cancelled = false
+    const query = appliedSearch ? '?search=' + encodeURIComponent(appliedSearch) : ''
     api
-      .get('/api/customers')
+      .get('/api/customers' + query)
       .then((data) => {
         if (!cancelled) {
           setCustomers(data)
@@ -32,10 +35,20 @@ export default function CustomerList({ user }) {
     return () => {
       cancelled = true
     }
-  }, [reloadCount])
+  }, [reloadCount, appliedSearch])
 
   function reload() {
     setReloadCount((n) => n + 1)
+  }
+
+  function handleSearch(event) {
+    event.preventDefault()
+    setAppliedSearch(searchText.trim())
+  }
+
+  function handleClear() {
+    setSearchText('')
+    setAppliedSearch('')
   }
 
   function handleSaved() {
@@ -64,10 +77,25 @@ export default function CustomerList({ user }) {
       <div className="toolbar">
         <div>
           <h2>Customers</h2>
-          <p className="muted">{customers.length} customer(s)</p>
+          <p className="muted">
+            {customers.length} customer(s)
+            {appliedSearch && ' matching "' + appliedSearch + '"'}
+          </p>
         </div>
         <button onClick={() => setForm({ customer: null })}>Add customer</button>
       </div>
+
+      <form className="search-bar" onSubmit={handleSearch}>
+        <input
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          placeholder="Search by name, email or phone"
+        />
+        <button type="submit">Search</button>
+        <button type="button" className="secondary" onClick={handleClear}>
+          Clear
+        </button>
+      </form>
 
       {actionError && <div className="error">{actionError}</div>}
 
@@ -81,7 +109,7 @@ export default function CustomerList({ user }) {
       )}
 
       {customers.length === 0 ? (
-        <p>There are no customers yet.</p>
+        <p>{appliedSearch ? 'No customers match your search.' : 'There are no customers yet.'}</p>
       ) : (
         <table>
           <thead>
