@@ -5,6 +5,7 @@ import com.bms.backend.common.NotFoundException;
 import com.bms.backend.common.TextRules;
 import com.bms.backend.common.ValidationException;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ public class CustomerService {
     private static final int MAX_NAME = 50;
     private static final int MAX_EMAIL = 100;
     private static final int MAX_ADDRESS = 200;
+    private static final int MAX_SEARCH = 100;
     private static final Pattern EMAIL = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     private static final Pattern PHONE_CHARACTERS = Pattern.compile("^[0-9 +()-]+$");
 
@@ -30,12 +32,17 @@ public class CustomerService {
         this.customers = customers;
     }
 
+    /** All active customers, or only those matching the search text (name, email or phone). */
     @Transactional(readOnly = true)
-    public List<CustomerResponse> listActive() {
-        return customers.findByActiveTrueOrderByLastNameAscFirstNameAsc()
-                .stream()
-                .map(CustomerResponse::from)
-                .toList();
+    public List<CustomerResponse> list(String search) {
+        String text = search == null ? "" : search.trim();
+        if (text.length() > MAX_SEARCH) {
+            throw new ValidationException("The search text may be at most " + MAX_SEARCH + " characters.");
+        }
+        List<Customer> found = text.isEmpty()
+                ? customers.findByActiveTrueOrderByLastNameAscFirstNameAsc()
+                : customers.search(text.toLowerCase(Locale.ROOT));
+        return found.stream().map(CustomerResponse::from).toList();
     }
 
     @Transactional(readOnly = true)

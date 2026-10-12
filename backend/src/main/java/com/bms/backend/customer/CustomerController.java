@@ -9,12 +9,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * The web layer. Each method answers one kind of HTTP request:
- *   GET    /api/customers        list
+ *   GET    /api/customers        list (add ?search=anna to filter by name, email or phone)
  *   GET    /api/customers/5      one customer
  *   POST   /api/customers        create   (JSON body)
  *   PUT    /api/customers/5      change   (JSON body)
@@ -31,8 +32,8 @@ public class CustomerController {
     }
 
     @GetMapping
-    public List<CustomerResponse> list() {
-        return service.listActive();
+    public List<CustomerResponse> list(@RequestParam(required = false) String search) {
+        return service.list(search);
     }
 
     @GetMapping("/{id}")
