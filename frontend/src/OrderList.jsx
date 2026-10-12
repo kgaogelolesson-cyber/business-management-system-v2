@@ -119,7 +119,13 @@ export default function OrderList({ user }) {
         <NewOrderForm onSaved={handleCreated} onCancel={() => setPanel(null)} />
       )}
       {panel && panel.type === 'detail' && (
-        <OrderDetail key={panel.id} orderId={panel.id} onClose={() => setPanel(null)} />
+        <OrderDetail
+          key={panel.id}
+          orderId={panel.id}
+          user={user}
+          onClose={() => setPanel(null)}
+          onChanged={() => setReloadCount((n) => n + 1)}
+        />
       )}
 
       {orders.length === 0 ? (

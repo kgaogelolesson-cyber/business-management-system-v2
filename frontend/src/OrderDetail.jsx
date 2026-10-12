@@ -3,9 +3,36 @@ import { api } from './api'
 import { formatMoney } from './money'
 
 // One order with its lines. The prices shown are the prices AT THE TIME of the sale.
-export default function OrderDetail({ orderId, onClose }) {
+// An administrator also gets a "Cancel order" button on a completed order.
+export default function OrderDetail({ orderId, user, onClose, onChanged }) {
   const [detail, setDetail] = useState(null) // null = still loading
   const [error, setError] = useState('')
+  const [actionError, setActionError] = useState('')
+  const [busy, setBusy] = useState(false)
+
+  const isAdmin = user && user.role === 'ADMIN'
+
+  async function handleCancel() {
+    if (
+      !window.confirm(
+        'Cancel order #' + orderId + '? Its products will be put back into stock. This cannot be undone.'
+      )
+    ) {
+      return
+    }
+    setActionError('')
+    setBusy(true)
+    try {
+      const updated = await api.post('/api/orders/' + orderId + '/cancel')
+      setDetail(updated)
+      onChanged() // makes the list behind this panel load again
+    } catch (e) {
+      // For example: Order #4 is already cancelled.
+      setActionError(e.message)
+    } finally {
+      setBusy(false)
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -46,6 +73,7 @@ export default function OrderDetail({ orderId, onClose }) {
             </span>
           </p>
           {detail.cancellation && <div className="error">{detail.cancellation}</div>}
+          {actionError && <div className="error">{actionError}</div>}
 
           <table>
             <thead>
@@ -70,6 +98,14 @@ export default function OrderDetail({ orderId, onClose }) {
           <p className="order-total">
             Total: <strong>{formatMoney(detail.order.totalCents)}</strong>
           </p>
+
+          {isAdmin && detail.order.status === 'COMPLETED' && (
+            <div className="form-actions">
+              <button className="danger" onClick={handleCancel} disabled={busy}>
+                {busy ? 'Cancelling...' : 'Cancel order'}
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>
