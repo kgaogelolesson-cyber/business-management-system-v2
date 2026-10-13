@@ -378,3 +378,11 @@ tr.row-cancelled td.actions,
 tr.row-cancelled td:last-child {
   text-decoration: none;
 }
+
+/* ---------- suppliers / supplier dropdown in the product form ---------- */
+.form-card select {
+  padding: 8px 10px;
+  border: 1px solid #c3ccd5;
+  border-radius: 6px;
+  font-size: 1rem;
+}

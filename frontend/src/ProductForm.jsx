@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { api } from './api'
 import { centsToRands, randsToCents } from './money'
 
@@ -12,8 +12,26 @@ export default function ProductForm({ product, onSaved, onCancel }) {
   const [price, setPrice] = useState(product ? centsToRands(product.priceCents) : '')
   const [stock, setStock] = useState('')
   const [reorderLevel, setReorderLevel] = useState(product ? String(product.reorderLevel) : '5')
+  const [supplierId, setSupplierId] = useState(product?.supplierId ? String(product.supplierId) : '')
+  const [suppliers, setSuppliers] = useState([])
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+
+  // The product form is only shown to administrators, who are allowed to read the suppliers list.
+  useEffect(() => {
+    let cancelled = false
+    api
+      .get('/api/suppliers')
+      .then((items) => {
+        if (!cancelled) setSuppliers(items)
+      })
+      .catch((e) => {
+        if (!cancelled) setError(e.message)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -38,7 +56,7 @@ export default function ProductForm({ product, onSaved, onCancel }) {
       priceCents,
       quantityInStock: !editing && stock.trim() !== '' ? Number(stock) : null,
       reorderLevel: reorderLevel.trim() !== '' ? Number(reorderLevel) : null,
-      supplierId: product?.supplierId ?? null, // suppliers come in a later step; keep whatever is there
+      supplierId: supplierId === '' ? null : Number(supplierId),
     }
     try {
       if (editing) {
@@ -91,6 +109,18 @@ export default function ProductForm({ product, onSaved, onCancel }) {
           <input value={stock} onChange={(e) => setStock(e.target.value)} placeholder="0" />
         </label>
       )}
+
+      <label>
+        Supplier
+        <select value={supplierId} onChange={(e) => setSupplierId(e.target.value)}>
+          <option value="">(none)</option>
+          {suppliers.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.supplierName}
+            </option>
+          ))}
+        </select>
+      </label>
 
       <label>
         Reorder level (low-stock warning at or below this)
