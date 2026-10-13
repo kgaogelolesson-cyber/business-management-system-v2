@@ -32,7 +32,6 @@ project for a small business: customers, products, stock and orders, with an adm
 
 ## Not done yet
 
-- Suppliers, employees, reports and the dashboard screens (the tables exist in the database)
 - A settings screen and a backup button
 - Automated tests
 - HTTPS and token (JWT) login: see "Security notes"
