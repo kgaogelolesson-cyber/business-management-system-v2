@@ -47,6 +47,7 @@ public class SecurityConfig {
                         // Orders: any logged-in user may create and view them; only the administrator may cancel one.
                         .requestMatchers(HttpMethod.POST, "/api/orders/*/cancel").hasRole("ADMIN")
                         .requestMatchers("/api/suppliers/**").hasRole("ADMIN")
+                        .requestMatchers("/api/employees/**").hasRole("ADMIN")
                         // Everything else needs any logged-in user.
                         .anyRequest().authenticated());
         return http.build();
