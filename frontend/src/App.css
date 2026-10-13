@@ -386,3 +386,29 @@ tr.row-cancelled td:last-child {
   border-radius: 6px;
   font-size: 1rem;
 }
+
+/* ---------- employees ---------- */
+.search-bar label.check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.search-bar label.check input {
+  flex: none;
+  max-width: none;
+}
+
+tr.row-inactive td {
+  color: #888;
+}
+
+.notice {
+  background: #e3f4e8;
+  color: #1d6b35;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin: 8px 0;
+}

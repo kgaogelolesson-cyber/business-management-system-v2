@@ -7,6 +7,7 @@ import ProductList from './ProductList'
 import InventoryList from './InventoryList'
 import OrderList from './OrderList'
 import SupplierList from './SupplierList'
+import EmployeeList from './EmployeeList'
 
 // The top-level component. Until someone is logged in it shows only the login screen.
 export default function App() {
@@ -51,6 +52,11 @@ export default function App() {
             Suppliers
           </button>
         )}
+        {user.role === 'ADMIN' && (
+          <button className={tab === 'employees' ? 'active' : ''} onClick={() => setTab('employees')}>
+            Employees
+          </button>
+        )}
       </nav>
 
       {tab === 'customers' && <CustomerList user={user} />}
@@ -58,6 +64,7 @@ export default function App() {
       {tab === 'inventory' && <InventoryList user={user} />}
       {tab === 'orders' && <OrderList user={user} />}
       {tab === 'suppliers' && user.role === 'ADMIN' && <SupplierList />}
+      {tab === 'employees' && user.role === 'ADMIN' && <EmployeeList user={user} />}
     </div>
   )
 }
