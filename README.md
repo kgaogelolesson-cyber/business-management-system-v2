@@ -6,7 +6,7 @@ project for a small business: customers, products, suppliers, stock, orders, emp
 administrator and an employee role.
 
 > **Status: work in progress.** The parts listed under "What works today" were tested by hand in the
-> browser and with PowerShell. The parts under "Not done yet" do not exist. There are no automated tests yet.
+> browser and with PowerShell. The parts under "Not done yet" do not exist. 
 
 ## Screenshots
 
@@ -46,7 +46,6 @@ administrator and an employee role.
 ## Not done yet
 
 - A settings screen and a backup button (the currency symbol is read from the settings table but cannot be changed in the app)
-- Automated tests
 - HTTPS and token (JWT) login: see "Security notes"
 - The orders list shows at most the newest 1,000 orders
 
@@ -79,6 +78,21 @@ You need Java, Node.js and PostgreSQL installed.
    npm run dev
    ```
 5. Open http://localhost:5173 and log in.
+
+### Running the automated tests
+
+The tests use their own database so your real data is never touched.
+
+1. In pgAdmin create an empty database called `bms_test` and run `database/postgres-schema.sql` in it.
+2. In PowerShell:
+cd backend
+$env:DB_PASSWORD = “your postgres password”
+.\mvnw.cmd test
+
+
+They check that stock never goes below 0, that a failed order is rolled back completely, that an employee
+cannot see another employee's orders, and that cancelling an order puts the stock back. Before every test the
+test database is emptied, and the tests refuse to run unless they are connected to `bms_test`.
 
 Demo accounts (created automatically, **for local testing only**):
 
