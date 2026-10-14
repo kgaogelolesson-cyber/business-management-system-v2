@@ -412,3 +412,33 @@ tr.row-inactive td {
   padding: 8px 12px;
   margin: 8px 0;
 }
+
+/* ---------- reports ---------- */
+.report-bar {
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.report-bar label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+}
+
+.report-bar select,
+.report-bar input[type='date'] {
+  flex: none;
+  padding: 8px 10px;
+  border: 1px solid #c3ccd5;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.report-summary {
+  background: #eef3fb;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin: 8px 0 12px;
+  font-size: 0.95rem;
+}
