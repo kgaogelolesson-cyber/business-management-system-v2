@@ -442,3 +442,38 @@ tr.row-inactive td {
   margin: 8px 0 12px;
   font-size: 0.95rem;
 }
+
+/* ---------- dashboard ---------- */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 12px 0 20px;
+}
+
+.stat-card {
+  background: #fff;
+  border: 1px solid #d5dbe1;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.stat-card.stat-warn {
+  border-color: #e6b8b8;
+  background: #fff5f5;
+}
+
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.stat-label {
+  color: #667;
+  font-size: 0.9rem;
+}
+
+.dash-lists {
+  display: grid;
+  gap: 20px;
+}

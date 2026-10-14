@@ -9,16 +9,17 @@ import OrderList from './OrderList'
 import SupplierList from './SupplierList'
 import EmployeeList from './EmployeeList'
 import ReportPanel from './ReportPanel'
+import DashboardPanel from './DashboardPanel'
 
 // The top-level component. Until someone is logged in it shows only the login screen.
 export default function App() {
   const [user, setUser] = useState(null) // becomes { username, role } after a successful login
-  const [tab, setTab] = useState('customers') // which screen is showing
+  const [tab, setTab] = useState('dashboard') // which screen is showing
 
   function handleLogout() {
     clearCredentials()
     setUser(null)
-    setTab('customers')
+    setTab('dashboard')
   }
 
   if (!user) {
@@ -36,6 +37,9 @@ export default function App() {
       </header>
 
       <nav className="tabs">
+        <button className={tab === 'dashboard' ? 'active' : ''} onClick={() => setTab('dashboard')}>
+          Dashboard
+        </button>
         <button className={tab === 'customers' ? 'active' : ''} onClick={() => setTab('customers')}>
           Customers
         </button>
@@ -65,6 +69,7 @@ export default function App() {
         )}
       </nav>
 
+      {tab === 'dashboard' && <DashboardPanel />}
       {tab === 'customers' && <CustomerList user={user} />}
       {tab === 'products' && <ProductList user={user} />}
       {tab === 'inventory' && <InventoryList user={user} />}
