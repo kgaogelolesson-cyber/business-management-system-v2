@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.css'
-import { clearCredentials } from './api'
+import { api, clearCredentials } from './api'
+import { setCurrencySymbol } from './money'
 import LoginForm from './LoginForm'
 import CustomerList from './CustomerList'
 import ProductList from './ProductList'
@@ -10,11 +11,30 @@ import SupplierList from './SupplierList'
 import EmployeeList from './EmployeeList'
 import ReportPanel from './ReportPanel'
 import DashboardPanel from './DashboardPanel'
+import SettingsPanel from './SettingsPanel'
 
 // The top-level component. Until someone is logged in it shows only the login screen.
 export default function App() {
   const [user, setUser] = useState(null) // becomes { username, role } after a successful login
   const [tab, setTab] = useState('dashboard') // which screen is showing
+
+  const [symbol, setSymbol] = useState('R') // the currency symbol from the server
+
+  function applySymbol(newSymbol) {
+    setCurrencySymbol(newSymbol) // used by formatMoney
+    setSymbol(newSymbol) // changing it makes the screens below start fresh and show the new symbol
+  }
+
+  // After a successful login, load the settings first so prices show the right symbol from the start.
+  async function handleLogin(loggedIn) {
+    try {
+      const settings = await api.get('/api/settings')
+      applySymbol(settings.currencySymbol)
+    } catch {
+      // If the settings cannot be loaded, prices simply show "R".
+    }
+    setUser(loggedIn)
+  }
 
   function handleLogout() {
     clearCredentials()
@@ -23,7 +43,7 @@ export default function App() {
   }
 
   if (!user) {
-    return <LoginForm onLogin={setUser} />
+    return <LoginForm onLogin={handleLogin} />
   }
 
   return (
@@ -67,8 +87,14 @@ export default function App() {
             Reports
           </button>
         )}
+        {user.role === 'ADMIN' && (
+          <button className={tab === 'settings' ? 'active' : ''} onClick={() => setTab('settings')}>
+            Settings
+          </button>
+        )}
       </nav>
 
+      <div key={symbol}>
       {tab === 'dashboard' && <DashboardPanel />}
       {tab === 'customers' && <CustomerList user={user} />}
       {tab === 'products' && <ProductList user={user} />}
@@ -77,6 +103,10 @@ export default function App() {
       {tab === 'suppliers' && user.role === 'ADMIN' && <SupplierList />}
       {tab === 'employees' && user.role === 'ADMIN' && <EmployeeList user={user} />}
       {tab === 'reports' && user.role === 'ADMIN' && <ReportPanel />}
+      {tab === 'settings' && user.role === 'ADMIN' && (
+        <SettingsPanel currencySymbol={symbol} onSaved={applySymbol} />
+      )}
+      </div>
     </div>
   )
 }

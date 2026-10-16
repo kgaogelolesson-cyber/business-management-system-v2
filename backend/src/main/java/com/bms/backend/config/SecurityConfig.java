@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/suppliers/**").hasRole("ADMIN")
                         .requestMatchers("/api/employees/**").hasRole("ADMIN")
                         .requestMatchers("/api/reports/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/settings").hasRole("ADMIN")
                         // Everything else needs any logged-in user.
                         .anyRequest().authenticated());
         return http.build();
