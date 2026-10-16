@@ -43,9 +43,10 @@ administrator and an employee role.
 - **Reports** (administrator only): sales by product, employee, customer and day (completed orders in a date range, cancelled orders not counted), stock levels and value, and low stock. Any report can be exported to CSV.
 - Every rule is checked on the **server** and answered with a readable message (for example "Only 3 in stock for ...").
 
+- A Settings screen (administrator only) where the currency symbol can be changed; every price in the app uses it.
+
 ## Not done yet
 
-- A settings screen and a backup button (the currency symbol is read from the settings table but cannot be changed in the app)
 - HTTPS and token (JWT) login: see "Security notes"
 - The orders list shows at most the newest 1,000 orders
 
@@ -93,6 +94,7 @@ $env:DB_PASSWORD = “your postgres password”
 They check that stock never goes below 0, that a failed order is rolled back completely, that an employee
 cannot see another employee's orders, and that cancelling an order puts the stock back. Before every test the
 test database is emptied, and the tests refuse to run unless they are connected to `bms_test`.
+There are 13 tests in total.
 
 Demo accounts (created automatically, **for local testing only**):
 
