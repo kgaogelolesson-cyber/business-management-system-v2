@@ -103,6 +103,28 @@ Demo accounts (created automatically, **for local testing only**):
 | admin | Admin@123 | Administrator |
 | thandi | Employee@123 | Employee |
 
+
+## Backing up and restoring
+
+Back up the database with one command (PowerShell, from any folder). Keep the file somewhere safe and
+**outside** the project folder, because it contains real data:
+
+```
+$env:PGPASSWORD = $env:DB_PASSWORD
+& "C:\Program Files\PostgreSQL\18\bin\pg_dump.exe" -U postgres -d bms -f "$HOME\bms-backup.sql"
+Remove-Item Env:PGPASSWORD
+```
+
+To restore into an empty database (here called `bms_restore`):
+
+```
+& "C:\Program Files\PostgreSQL\18\bin\createdb.exe" -U postgres bms_restore
+& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -d bms_restore -q -f "$HOME\bms-backup.sql"
+```
+
+I tested this by restoring a backup into a separate database and comparing the customer counts. There is no
+backup button in the app.
+
 ## Security notes
 
 - Login uses HTTP Basic authentication with BCrypt-hashed passwords, no sessions and no cookies. That is simple, but it is only safe over HTTPS, and the passwords above are public, so **do not expose this app to a network as it is**. A real system would use HTTPS and a token (JWT). That is a possible next step.
